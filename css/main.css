@@ -1,0 +1,16 @@
+.dropdown-content {
+    width: max-content !important;
+    height: auto !important;
+    margin-top: 50px;
+}
+
+.title {
+    font-family: Acme,Helcetica,Arial,"Helvetica Neue",sans-serif;
+    font-size: 3em;
+    line-height: 1.2em;
+    margin: 10px 0;
+}
+
+span, .bit {
+    margin-top: 15px;
+}

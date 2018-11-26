@@ -13,6 +13,8 @@ function UISetup() {
     for (var i = 0; i < modes.length; i++)
         modes[i].addEventListener("click", ChangeMode);
 
+    document.getElementById("decimalValue").addEventListener("input", ChangeInput);
+    document.getElementById("decimalValueClone").addEventListener("input", ChangeInput);
     
     // This function is called after everything has been loaded in. At
     // this point, set the tablestyle and mode to what the user had before
@@ -32,20 +34,36 @@ function UISetup() {
 // Function goal: set decimal value and bits to 0
 function Reset() {
     document.getElementById("decimalValue").value = 0;
+    document.getElementById("decimalValueClone").value = 0;
+    
     var bits = document.getElementsByClassName("bit");
     for (var i = 0; i < bits.length; i++) bits[i].innerHTML = "0";
+}
+
+function ChangeInput(e){
+    var value = e.srcElement.value;
+    var test = document.getElementById("decimalValue")
+    test.value = value;
+    var test = document.getElementById("decimalValueClone");
+    test.value = value;
+    
 }
 
 // Function goal: allow the user to switch the table style
 function ChangeTableStyle(e) {
     // Enable all buttons -
     var tableStyles = document.getElementsByClassName("tableStyle");
-    for (var i = 0; i < tableStyles.length; i++)
+    for (var i = 0; i < tableStyles.length; i++) {
         tableStyles[i].disabled = false;
+        tableStyles[i].classList.add("teal");
+        tableStyles[i].classList.add("lighten-4");
+    }
 
     // - except the one of the currently pressed button/activated style
     var selectedTableStyle = e.srcElement;
     selectedTableStyle.disabled = true;
+    selectedTableStyle.classList.remove("teal");
+    selectedTableStyle.classList.remove("lighten-4");
 
     // Get the CSS HTML elements
     var portrait = document.getElementById("portrait");
@@ -55,26 +73,23 @@ function ChangeTableStyle(e) {
         // If dynamic is selected -
         case "dynamic":
             // - enable the CSS for portrait and landscape -
-            portrait.disabled = false;
-            landscape.disabled = false;
-            // - and let the browser choose depending on the screen orientation.
-            portrait.media = "(orientation: portrait)";
-            landscape.media = "(orientation: landscape)";
+            landscape.className = "hide-on-med-and-down";
+            portrait.className = "hide-on-large-only";
+            landscape.style.display = "";
+            portrait.style.display = "";
             break;
         // If landscape is selected, force the landscape style by -
         case "landscape":
-            portrait.disabled = true;  // - disabling portrait, -
-            landscape.disabled = false;  // - enabling landscape -
-            // - and removing the media condition for landscape.
-            // (Otherwise the landscape screen orientation will remain necessary)
-            landscape.media = "";
+            landscape.style.display = "";
+            portrait.style.display = "none";
+            landscape.className = "";
             break;
         // If portrait is selected, force portrait.
         // This is done in the same manner as above for landscape
         case "portrait":
-            landscape.disabled = true;
-            portrait.disabled = false;
-            portrait.media = "";
+            portrait.style.display = "";
+            landscape.style.display = "none";
+            portrait.className = "";
             break;
     }
 
@@ -86,11 +101,17 @@ function ChangeTableStyle(e) {
 function ChangeMode(e) {
     // Enable all mode buttons -
     var modes = document.getElementsByClassName("mode");
-    for (var i = 0; i < modes.length; i++)
+    for (var i = 0; i < modes.length; i++) {
         modes[i].disabled = false;
+        modes[i].classList.add("teal");
+        modes[i].classList.add("lighten-4");
+    }
 
     // - and disable the button of the currently selected mode
-    e.srcElement.disabled = true;
+    var selectedMode = e.srcElement;
+    selectedMode.disabled = true;
+    selectedMode.classList.remove("teal");
+    selectedMode.classList.remove("lighten-4");
 
     switch (e.srcElement.value) {
         // If the calculator button has been pressed -
