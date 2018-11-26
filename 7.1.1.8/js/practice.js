@@ -14,6 +14,9 @@ function NewExercise() {
     decimalValue.removeEventListener("input", CalculateBits);
     // and by default, do not allow the user to modify the decimal value
     decimalValue.disabled = true;
+    decimalValue = document.getElementById("decimalValueClone");
+    decimalValue.removeEventListener("input", CalculateBits);
+    decimalValue.disabled = true;
 
     // Show the checkAnswer button
     document.getElementById("checkAnswer").style.display = "initial";
@@ -21,8 +24,6 @@ function NewExercise() {
     var bits = document.getElementsByClassName("bit");
     for (var i = 0; i < bits.length; i++) {
         var bit = bits[i];
-        // By default, do not allow the user to modify the bits
-        bit.disabled = true;
         // Remove the ChangeBit onclick used in calculator.js
         bit.removeEventListener("click", ChangeBit);
         // Add the ChangeBit onclick used in this file
@@ -30,52 +31,31 @@ function NewExercise() {
     }
 
     // Randomly determine what type of exercise to generate
-    if (random(0, 2) == 0) GiveDecimalAskBits();
-    else GiveBitsAskDecimal();
+    DecimalToBinary();
 }
 
 // Function goal: generate an exercise that gives a random decimal
 // value, asking the user to enter the corresponding bits
-function GiveDecimalAskBits() {
+function DecimalToBinary() {
     // Give the user a random decimal value
-    document.getElementById("decimalValue").value = random(0, 256);
-
-    // Once the decimal value is given, allow user to modify bits
-    var bits = document.getElementsByClassName("bit");
-    for (var i = 0; i < bits.length; i++)
-        bits[i].disabled = false;
+    randomNumber = random(0, 256);
+    document.getElementById("decimalValue").value = randomNumber;
+    document.getElementById("decimalValueClone").value = randomNumber;
 
     var checkAnswer = document.getElementById("checkAnswer");
-    // Make sure the CheckAnswer button doesn't check the decimal value
-    checkAnswer.removeEventListener("click", CheckAskedDecimalValue);
     // Set the CheckAnswer button to check the asked bit value
     checkAnswer.addEventListener("click", CheckAskedBits);
 }
 
-// Function goal: generate an exercise that gives a random bit value,
-// asking the user to enter the corresponding decimal value
-function GiveBitsAskDecimal() {
-    // Randomly put 0's and 1's in the bits
-    var bits = document.getElementsByClassName("bit");
-    for (var i = 0; i < bits.length; i++)
-        bits[i].innerHTML = random(0, 2);
-
-    // When bits are given, allow user to modify decimal value
-    document.getElementById("decimalValue").disabled = false;
-
-    var checkAnswer = document.getElementById("checkAnswer");
-    // Make sure the CheckAnswer button doesn't check the bit value
-    checkAnswer.removeEventListener("click", CheckAskedBits);
-    // Set the CheckAnswer button to check the asked decimal value
-    checkAnswer.addEventListener("click", CheckAskedDecimalValue);
-}
-
 // Function goal: change the value of a bit from 0 to 1 or vica versa
 function ChangeBitPractice(e) {
-    var bit = e.srcElement;  // Get the clicked bit
-    // Check the bits' value, and change it accordingly
-    if (bit.innerHTML == "0") bit.innerHTML = "1";
-    else bit.innerHTML = "0";
+    var bitsToChange = document.querySelectorAll(".bit[value='" + e.srcElement.value + "']");
+    for (var i = 0; i < bitsToChange.length; i++) {
+        var bit = bitsToChange[i]; // Get the clicked bit
+        // Check the bits' value, and change it accordingly
+        if (bit.innerHTML == "0") bit.innerHTML = "1";
+        else bit.innerHTML = "0";
+    }
 }
 
 // Function goal: check if the bits the user entered
@@ -90,7 +70,7 @@ function CheckAskedBits() {
 
     // Loop through the bits top to bottom (thus 128 to 1)
     var bits = document.getElementsByClassName("bit");
-    for (var i = 0; i < bits.length; i++) {
+    for (var i = 0; i < bits.length/2; i++) {
         var bit = bits[i];
         // Get bit value (128, 64, etc.)
         var bitValue = parseInt(bit.value);
@@ -114,32 +94,6 @@ function CheckAskedBits() {
     if (correctBits == userBits) alert("Correct!");
     // Otherwise, show the user the correct answer
     else alert("Incorrect! The answer you gave was " + userBits + " but the correct answer is " + correctBits + "!");
-
-    // Start a new exercise now that this one is finished
-    NewExercise();
-}
-
-// Function goal: check if the decimal value the user
-// entered equals the bit value given by the exercise
-function CheckAskedDecimalValue() {
-    // Get the decimal value the user entered into the input
-    var answer = parseInt(document.getElementById("decimalValue").value);
-
-    correctValue = 0;  // Calculate the correct decimal value, start from 0
-    // Loop through all the bits -
-    var bits = document.getElementsByClassName("bit");
-    for (var i = 0; i < bits.length; i++) {
-        var bit = bits[i];
-        // - and if their value is 1, append the value of
-        // their value property to the total correct decimal value
-        if (bit.innerHTML == "1") correctValue += parseInt(bit.value);
-    }
-
-    // If the correct decimal value equals what the user entered,
-    // the exercise is done correctly
-    if (correctValue == answer) alert("Correct!");
-    // Otherwise, show the user the correct answer
-    else alert("Incorrect! The answer you gave was " + answer + ", but the correct answer is " + correctValue + "!");
 
     // Start a new exercise now that this one is finished
     NewExercise();
